@@ -2,6 +2,7 @@
 
 namespace ConsoleApp27
 {
+    //fdsfddfs
     abstract class Person
     {
         protected Person(string? name, string? surname)
