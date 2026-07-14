@@ -1,8 +1,11 @@
-﻿using System.Xml.Linq;
-
+﻿using System.Text;
+using System.Text.Json;
+using System.Xml.Linq;
+using Newtonsoft.Json;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 namespace ConsoleApp27
 {
-    //fdsfddfs
+
     abstract class Person
     {
         protected Person(string? name, string? surname)
@@ -125,6 +128,8 @@ namespace ConsoleApp27
     static class Notification
     {
         static event Action? actionSystem;
+
+        public static List<string> action = new List<string>();
         public static void Rezerv(Doctor doctor, User user, string? choice_hour)
         {
             if (choice_hour == "1")
@@ -137,6 +142,7 @@ namespace ConsoleApp27
                     user.AcceptHour_09_11 = true;
                     user.Doctors.Add(doctor);
                     actionSystem += () => Console.WriteLine($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
+                    action.Add($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 09-11 arasi olan rezerv qebul olundu.!");
                     return;
 
@@ -151,6 +157,7 @@ namespace ConsoleApp27
                             user.AcceptHour_09_11 = false;
                             actionSystem -= () => Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!");
                             Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 09-11 arasi olan rezervasiya legv olundu.!");
+                            action.Remove($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                             return;
                         }
                     }
@@ -166,6 +173,7 @@ namespace ConsoleApp27
                     user.AcceptHour_12_14 = true;
                     user.Doctors.Add(doctor);
                     actionSystem += () => Console.WriteLine($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
+                    action.Add($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 12-14 arasi olan rezerv qebul olundu.!");
                     return;
 
@@ -180,6 +188,7 @@ namespace ConsoleApp27
                             user.AcceptHour_12_14 = false;
                             actionSystem -= () => Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!");
                             Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 12-14 arasi olan rezervasiya legv olundu.!");
+                            action.Remove($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                             return;
                         }
                     }
@@ -195,6 +204,7 @@ namespace ConsoleApp27
                     user.AcceptHour_15_17 = true;
                     user.Doctors.Add(doctor);
                     actionSystem += () => Console.WriteLine($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
+                    action.Add($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 15-17 arasi olan rezerv qebul olundu.!");
                     return;
 
@@ -209,6 +219,7 @@ namespace ConsoleApp27
                             user.AcceptHour_15_17 = false;
                             actionSystem -= () => Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!");
                             Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 15-17 arasi olan rezervasiya legv olundu.!");
+                            action.Remove($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                             return;
                         }
                     }
@@ -221,6 +232,15 @@ namespace ConsoleApp27
         {
             Console.WriteLine("Butun rezerv olunan hekimler");
             actionSystem?.Invoke();
+        }
+
+        
+        public static void StartEqualAction(List<string> actione)
+        {
+            foreach(var item in actione)
+            {
+                actionSystem += () => Console.WriteLine(item);
+            }
         }
     }
 
@@ -481,30 +501,91 @@ namespace ConsoleApp27
     }
     internal class Program
     {
+        static void JsonSerializer(Hospital hospital)
+        {
+            var jsl = new JsonSerializerSettings();
+            jsl.TypeNameHandling = TypeNameHandling.All;
+            var js = new JsonSerializer();
+            using (var sw = new StreamWriter("hospital.json"))
+            {
+                using (var jw = new JsonTextWriter(sw))
+                {
+                    jw.Formatting = Newtonsoft.Json.Formatting.Indented;
+                    js.Serialize(jw, hospital);
+                }
+            }
+        }
+        static void NotificationJsonSerializer(List<string> action)
+        {
+            var jsl = new JsonSerializerSettings();
+            jsl.TypeNameHandling = TypeNameHandling.All;
+            var js = new JsonSerializer();
+            using (var sw = new StreamWriter("Action.json"))
+            {
+                using (var jw = new JsonTextWriter(sw))
+                {
+                    jw.Formatting = Newtonsoft.Json.Formatting.Indented;
+                    js.Serialize(jw, action);
+                }
+            }
+        }
+        static List<string> NotificationJsonDeserializer()
+        {
+            var jsl = new JsonSerializerSettings();
+            jsl.TypeNameHandling = TypeNameHandling.All;
+            List<string> action = null;
+            var js = new JsonSerializer();
+
+            using (var sr = new StreamReader("Action.json"))
+            {
+                using (var jr = new JsonTextReader(sr))
+                {
+                    action = js.Deserialize<List<string>>(jr);
+                }
+            }
+            return action;
+        }
+        static Hospital JsonDeserializer()
+        {
+            var jsl = new JsonSerializerSettings();
+            jsl.TypeNameHandling = TypeNameHandling.All;
+            Hospital hospital = null;
+            var js = new JsonSerializer();
+
+            using (var sr = new StreamReader("hospital.json"))
+            {
+                using (var jr = new JsonTextReader(sr))
+                {
+                    hospital = js.Deserialize<Hospital>(jr);
+                }
+            }
+            return hospital;
+        }
+        static void ExceptionAllWrite(Exception ex)
+        {
+            var jsl = new JsonSerializerSettings();
+            jsl.TypeNameHandling = TypeNameHandling.All;
+            using (var fs = new FileStream("ExceptionLog.txt", FileMode.Append, FileAccess.Write))
+            {
+
+                using (var sw = new StreamWriter(fs, Encoding.UTF8))
+                {
+                    sw.WriteLine(ex.ToString());
+                }
+
+            }
+        }
         static void Main(string[] args)
         {
-            Hospital hospital = new Hospital();
 
-            hospital?.Traumatology?.Add(new Doctor("Asif", "Meherremov", 55, 9));
-            hospital?.Traumatology?.Add(new Doctor("Aqil", "Hemidov", 55, 9));
-            hospital?.Traumatology?.Add(new Doctor("Qalib", "Aliyev", 55, 9));
-            hospital?.Traumatology?.Add(new Doctor("Eli", "Musayev", 55, 9));
-
-            hospital?.Pediatrics?.Add(new Doctor("Kazim", "Abitalibov", 55, 9));
-            hospital?.Pediatrics?.Add(new Doctor("Kemale", "Merdanova", 55, 9));
-            hospital?.Pediatrics?.Add(new Doctor("Samxal", "Babayev", 55, 9));
-            hospital?.Pediatrics?.Add(new Doctor("Esmira", "Adigozelova", 55, 9));
-
-            hospital?.Dentistry?.Add(new Doctor("Sireli", "Aydinov", 55, 9));
-            hospital?.Dentistry?.Add(new Doctor("Sohrab", "Cavadov", 55, 9));
-            hospital?.Dentistry?.Add(new Doctor("Inci", "cemilova", 55, 9));
-            hospital?.Dentistry?.Add(new Doctor("Qenire", "Yolcuyeva", 55, 9));
+            Hospital hospital =JsonDeserializer();
+            Notification.StartEqualAction(NotificationJsonDeserializer());
 
             Console.WriteLine("Ozel xestaxana sistemi");
             bool IsTrue = true;
             while (IsTrue)
             {
-                Console.WriteLine("1.Yeni istifadeki kimi qeydiyyatdan cekmek\n2.Movcu istifadeki kimi daxil olmaq\n3.Butun rezerv olunan hekimlere baxmaq\n0.Cixis etmek");
+                Console.WriteLine("1.Yeni istifadeki kimi qeydiyyatdan cekmek\n2.Movcud istifadeki kimi daxil olmaq\n3.Butun rezerv olunan hekimlere baxmaq\n0.Cixis etmek");
                 string? Choice = Console.ReadLine();
                 Console.Clear();
                 switch (Choice)
@@ -513,35 +594,40 @@ namespace ConsoleApp27
                         try
                         {
                             hospital?.AddUser();
+                            JsonSerializer(hospital);
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine(ex.Message);
-                            
+                            ExceptionAllWrite(ex);
                         }
                         break;
                     case "2":
                         try
                         {
                             hospital?.DoctorRandovu();
+                            JsonSerializer(hospital);
                         }
                         catch (Exception ex)
                         {
-
                             Console.WriteLine(ex.Message);
+                            ExceptionAllWrite(ex);
                         }
                         break;
                     case "3":
                         try
                         {
                             hospital?.AllRandovu();
+                            JsonSerializer(hospital);
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine(ex.Message);
+                            ExceptionAllWrite(ex);
                         }
                         break;
                     case "0":
+                        JsonSerializer(hospital);
                         IsTrue = false;
                         break;
                     default:
@@ -550,7 +636,8 @@ namespace ConsoleApp27
                 }
 
             }
-
+            JsonSerializer(hospital);
+            NotificationJsonSerializer(Notification.action);
 
 
 
