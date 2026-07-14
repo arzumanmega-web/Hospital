@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using Newtonsoft.Json;
@@ -8,6 +9,10 @@ namespace ConsoleApp27
 
     abstract class Person
     {
+        protected Person()
+        {
+            
+        }
         protected Person(string? name, string? surname)
         {
             Name = name;
@@ -47,7 +52,10 @@ namespace ConsoleApp27
 
     class Doctor : Person
     {
-
+        public Doctor()
+        {
+            
+        }
         public Doctor(string? name, string? surname, int age, int workExperience) : base(name, surname)
         {
             SID++;
@@ -63,7 +71,7 @@ namespace ConsoleApp27
         private int Age1 { get; set; }
         private int WorkExperience1 { get; set; }
 
-        public int ID { get; private set; }
+        public int ID { get; set; }
         //+ 09:00-11:00
         public bool WorkHour_09_11 { get; set; }
 
@@ -104,25 +112,10 @@ namespace ConsoleApp27
             string Second = (WorkHour_12_14) ? "Rezerv olunub" : "Rezerv olunmayib";
             string Thirdly = (WorkHour_15_17) ? "Rezerv olunub" : "Rezerv olunmayib";
 
-            return $"-------------- Doctor ----------------\nID: {ID}, Name: {Name}, Surname: {Surname}, Age: {Age}\nHekimin is saatlari\n09:00-11:00 - {First}\n12:00-14:00 - {Second}\n15:00-17:00 - {Thirdly}";
+            return $"-------------- Doctor ----------------\nID: {ID}, Name: {Name}, Surname: {Surname}, Age: {Age}\nHekimin is saatlari\n1. 09:00-11:00 - {First}\n2. 12:00-14:00 - {Second}\n3. 15:00-17:00 - {Thirdly}";
 
         }
 
-        public void RezervTime(string? rezerv_hour, User user)
-        {
-            if (rezerv_hour == "1")
-            {
-                Console.WriteLine($"Doctor {Name} {Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!");
-            }
-            else if (rezerv_hour == "2")
-            {
-                Console.WriteLine($"Doctor {Name} {Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!");
-            }
-            else
-            {
-                Console.WriteLine($"Doctor {Name} {Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!");
-            }
-        }
     }
 
     static class Notification
@@ -141,7 +134,6 @@ namespace ConsoleApp27
                     doctor.WorkHour_09_11 = true;
                     user.AcceptHour_09_11 = true;
                     user.Doctors.Add(doctor);
-                    actionSystem += () => Console.WriteLine($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     action.Add($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 09-11 arasi olan rezerv qebul olundu.!");
                     return;
@@ -155,7 +147,6 @@ namespace ConsoleApp27
                         {
                             doctor.WorkHour_09_11 = false;
                             user.AcceptHour_09_11 = false;
-                            actionSystem -= () => Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!");
                             Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 09-11 arasi olan rezervasiya legv olundu.!");
                             action.Remove($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 09-11 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                             return;
@@ -172,7 +163,6 @@ namespace ConsoleApp27
                     doctor.WorkHour_12_14 = true;
                     user.AcceptHour_12_14 = true;
                     user.Doctors.Add(doctor);
-                    actionSystem += () => Console.WriteLine($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     action.Add($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 12-14 arasi olan rezerv qebul olundu.!");
                     return;
@@ -186,7 +176,6 @@ namespace ConsoleApp27
                         {
                             doctor.WorkHour_12_14 = false;
                             user.AcceptHour_12_14 = false;
-                            actionSystem -= () => Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!");
                             Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 12-14 arasi olan rezervasiya legv olundu.!");
                             action.Remove($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 12-14 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                             return;
@@ -203,7 +192,6 @@ namespace ConsoleApp27
                     doctor.WorkHour_15_17 = true;
                     user.AcceptHour_15_17 = true;
                     user.Doctors.Add(doctor);
-                    actionSystem += () => Console.WriteLine($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     action.Add($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                     Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 15-17 arasi olan rezerv qebul olundu.!");
                     return;
@@ -217,7 +205,6 @@ namespace ConsoleApp27
                         {
                             doctor.WorkHour_15_17 = false;
                             user.AcceptHour_15_17 = false;
-                            actionSystem -= () => Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!");
                             Console.WriteLine($"Doctor {doctor.Name} {doctor.Surname} -a saat 15-17 arasi olan rezervasiya legv olundu.!");
                             action.Remove($"--------------------------------------------------\nDoctor {doctor.Name} {doctor.Surname} saat 15-17 arasi {user.Name} {user.Surname} qebul edecek..!\n--------------------------------------------------");
                             return;
@@ -230,6 +217,9 @@ namespace ConsoleApp27
         }
         public static void ShowAllRezervs()
         {
+            if(action.Count==0 || action == null) { Console.WriteLine("Heleki hec kim rezerv olunmayib.!");return; }
+            actionSystem = null;
+            StartEqualAction(action);
             Console.WriteLine("Butun rezerv olunan hekimler");
             actionSystem?.Invoke();
         }
@@ -319,8 +309,9 @@ namespace ConsoleApp27
                     {
                         if (item.ID == id)
                         {
+                            Console.WriteLine("-------------------------------------------------");
+                            Console.WriteLine(item);
                             Console.WriteLine("Hekimin hansi is saatini rezerv etmek isteyirsiniz.?");
-                            Console.WriteLine("1.Saat 09-11 -e\n2.Saat 12-14 -e\n3.Saat 15-17 -e");
                             string? choice2 = Console.ReadLine();
                             Console.Clear();
                             Notification.Rezerv(item, user, choice2);
@@ -346,8 +337,9 @@ namespace ConsoleApp27
                     {
                         if (item.ID == id)
                         {
+                            Console.WriteLine("-------------------------------------------------");
+                            Console.WriteLine(item);
                             Console.WriteLine("Hekimin hansi is saatini rezerv etmek isteyirsiniz.?");
-                            Console.WriteLine("1.Saat 09-11 -e\n2.Saat 12-14 -e\n3.Saat 15-17 -e");
                             string? choice2 = Console.ReadLine();
                             Console.Clear();
                             Notification.Rezerv(item, user, choice2);
@@ -373,8 +365,9 @@ namespace ConsoleApp27
                     {
                         if (item.ID == id)
                         {
+                            Console.WriteLine("-------------------------------------------------");
+                            Console.WriteLine(item);
                             Console.WriteLine("Hekimin hansi is saatini rezerv etmek isteyirsiniz.?");
-                            Console.WriteLine("1.Saat 09-11 -e\n2.Saat 12-14 -e\n3.Saat 15-17 -e");
                             string? choice2 = Console.ReadLine();
                             Console.Clear();
                             Notification.Rezerv(item, user, choice2);
@@ -408,7 +401,10 @@ namespace ConsoleApp27
 
     class User : Person
     {
-
+        public User()
+        {
+            Doctors = new List<Doctor>();
+        }
         public User(string? name, string? surname, int age, string? email, string? phone) : base(name, surname)
         {
             Age = age;
@@ -578,8 +574,29 @@ namespace ConsoleApp27
         static void Main(string[] args)
         {
 
-            Hospital hospital =JsonDeserializer();
+            Hospital? hospital =JsonDeserializer();
+            
+
+            //Hospital hospital = new Hospital();
             Notification.StartEqualAction(NotificationJsonDeserializer());
+
+            #region Doctors
+            //hospital?.Pediatrics?.Add(new Doctor("Kazim", "Abitalibov", 45, 9));
+            //hospital?.Pediatrics?.Add(new Doctor("Kemale", "Merdanova", 55, 12));
+            //hospital?.Pediatrics?.Add(new Doctor("Samxal", "Babayev", 51, 8));
+            //hospital?.Pediatrics?.Add(new Doctor("Esmira", "Adigozelova", 60, 16));
+
+            //hospital?.Traumatology?.Add(new Doctor("Asif", "Meherremov", 35, 7));
+            //hospital?.Traumatology?.Add(new Doctor("Aqil", "Hemidov", 48, 11));
+            //hospital?.Traumatology?.Add(new Doctor("Qalib", "Aliyev", 45, 9));
+            //hospital?.Traumatology?.Add(new Doctor("Eli", "Musayev", 49, 9));
+
+            //hospital?.Dentistry?.Add(new Doctor("Sireli", "Aydinov", 58, 19));
+            //hospital?.Dentistry?.Add(new Doctor("Sohrab", "Cavadov", 53, 13));
+            //hospital?.Dentistry?.Add(new Doctor("Inci", "cemilova", 38, 5));
+            //hospital?.Dentistry?.Add(new Doctor("Qenire", "Yolcuyeva", 42, 6));
+            #endregion
+
 
             Console.WriteLine("Ozel xestaxana sistemi");
             bool IsTrue = true;
@@ -595,6 +612,7 @@ namespace ConsoleApp27
                         {
                             hospital?.AddUser();
                             JsonSerializer(hospital);
+                            NotificationJsonSerializer(Notification.action);
                         }
                         catch (Exception ex)
                         {
@@ -607,6 +625,7 @@ namespace ConsoleApp27
                         {
                             hospital?.DoctorRandovu();
                             JsonSerializer(hospital);
+                            NotificationJsonSerializer(Notification.action);
                         }
                         catch (Exception ex)
                         {
@@ -619,6 +638,7 @@ namespace ConsoleApp27
                         {
                             hospital?.AllRandovu();
                             JsonSerializer(hospital);
+                            NotificationJsonSerializer(Notification.action);
                         }
                         catch (Exception ex)
                         {
@@ -628,6 +648,7 @@ namespace ConsoleApp27
                         break;
                     case "0":
                         JsonSerializer(hospital);
+                        NotificationJsonSerializer(Notification.action);
                         IsTrue = false;
                         break;
                     default:
