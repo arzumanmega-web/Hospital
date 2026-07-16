@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Newtonsoft.Json;
 using JsonSerializer = Newtonsoft.Json.JsonSerializer;
@@ -451,7 +452,9 @@ namespace ConsoleApp27
             get => Email1;
             set
             {
-                if (string.IsNullOrEmpty(value?.Trim()) || !value.EndsWith(".com") && !value.Contains("mail.") || value.Split("@").Length != 2)
+                bool isEmail = Regex.IsMatch(value, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase);
+
+                if (!isEmail)
                 {
                     throw new ArgumentException("Invalid input email..!");
                 }
